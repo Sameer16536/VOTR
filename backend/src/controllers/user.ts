@@ -21,7 +21,10 @@ const s3Client = new S3Client();
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export const registerUser = async (req: Request, res: Response): Promise<void> => {
+export const registerUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const hardcodedWalletAddress = "0x1234567890";
 
   // If no user exists then create a new user using upsert , if exists then update
@@ -65,7 +68,10 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
   }
 };
 
-export const getPresignedUrl = async (req: Request, res: Response): Promise<void> => {
+export const getPresignedUrl = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   //@ts-ignore
   const userId = req.userId;
   const uniqueId = uuidv4();
@@ -86,7 +92,10 @@ export const getPresignedUrl = async (req: Request, res: Response): Promise<void
   });
 };
 
-export const getUserTask = async (req: Request, res: Response): Promise<void> => {
+export const postUserTask = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   //Validate the inputs from user
   //@ts-ignore
   const userId = req.userId;
@@ -94,14 +103,14 @@ export const getUserTask = async (req: Request, res: Response): Promise<void> =>
   const parsedData = createTaskInput.safeParse(body);
 
   if (!parsedData.success) {
-    await res.status(411).json({
+    res.status(411).json({
       msg: "Invalid input data",
       error: parsedData.error,
     });
     return;
   }
   // Transaction to create task and options [both will happend together or none]s
-  let task =  await  prisma.$transaction(async (tx) => {
+  let task = await prisma.$transaction(async (tx) => {
     const task = await tx.task.create({
       data: {
         title: parsedData.data.title ?? DEFAULT_TITLE,
@@ -116,11 +125,63 @@ export const getUserTask = async (req: Request, res: Response): Promise<void> =>
         task_id: task.id,
       })),
     });
-    return task
+    return task;
   });
 
   res.json({
     msg: "Task created successfully",
-    id:task.id
+    id: task.id,
+  });
+};
+
+export const getUserTask = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const taskId = req.query.taskId;
+  //@ts-ignore
+  const userId = req.userId;
+
+  const taskDetails = await prisma.task.findFirst({
+    where: {
+      user_id: Number(userId),
+      id: Number(taskId),
+    },
+  });
+  if (!taskDetails) {
+    res.status(411).json({
+      msg: "Task not found",
+    });
+    return;
+  }
+
+  // Make this faster
+  const responses = await prisma.submission.findMany({
+    where: {
+      task_id: Number(taskId),
+    },
+    include: {
+      option: true,
+    },
+  });
+
+  const result: Record<
+    string,
+    {
+      count: number;
+      task: {
+        imageUrl: string;
+      };
+    }
+  > = {};
+  responses.forEach((r) => {
+    if (!result[r.option_id]) {
+      result[r.option_id] = {
+        count: 0,
+        task: {
+          imageUrl: r.option.image_url,
+        },
+      };
+    }
   });
 };
