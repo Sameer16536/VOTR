@@ -16,7 +16,7 @@ model User {
 
 model Task {
   id          Int          @id @default(autoincrement())
-  title       String
+  title       String?      @default("Untitled Task")
   options     Option[]
   user_id     Int
   user        User         @relation(fields: [user_id], references: [id])
@@ -28,23 +28,20 @@ model Task {
 model Option {
   id          Int          @id @default(autoincrement())
   image_url   String
-  option_id   Int
   task_id     Int
   task        Task         @relation(fields: [task_id], references: [id])
   submissions Submission[]
 }
 
 model Worker {
-  id              Int          @id @default(autoincrement())
-  name            String?
-  address         String       @unique
-  submissions     Submission[]
-  balance_id      Int
+  id             Int          @id @default(autoincrement())
+  name           String?
+  address        String       @unique
+  submissions    Submission[]
+  balance_id     Int
   pending_amount Int
   locked_amount  Int
 }
-
-
 
 model Submission {
   id        Int    @id @default(autoincrement())
@@ -54,7 +51,7 @@ model Submission {
   option    Option @relation(fields: [option_id], references: [id])
   task_id   Int
   task      Task   @relation(fields: [task_id], references: [id])
-  amount   Int
+  amount    Int
 }
 
 //Think for More optimal solution

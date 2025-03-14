@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/controllers/user.ts","./src/controllers/worker.ts","./src/middleware/auth.middleware.ts","./src/routers/user.ts","./src/routers/worker.ts"],"version":"5.8.2"}
+{"root":["./src/index.ts","./src/types.ts","./src/controllers/user.ts","./src/controllers/worker.ts","./src/middleware/auth.middleware.ts","./src/routers/user.ts","./src/routers/worker.ts"],"version":"5.8.2"}
