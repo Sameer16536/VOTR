@@ -38,7 +38,6 @@ model Worker {
   name           String?
   address        String       @unique
   submissions    Submission[]
-  balance_id     Int
   pending_amount Int
   locked_amount  Int
 }
