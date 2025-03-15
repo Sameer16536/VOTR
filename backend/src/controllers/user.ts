@@ -147,6 +147,9 @@ export const getUserTask = async (
       user_id: Number(userId),
       id: Number(taskId),
     },
+    include: {
+      options: true,
+    },
   });
   if (!taskDetails) {
     res.status(411).json({
@@ -169,19 +172,27 @@ export const getUserTask = async (
     string,
     {
       count: number;
-      task: {
+      option: {
         imageUrl: string;
       };
     }
   > = {};
+  taskDetails.options.forEach((o) => {
+    result[o.id] = {
+      count: 0,
+      option: {
+        imageUrl: o.image_url,
+      },
+    };
+  });
+
   responses.forEach((r) => {
-    if (!result[r.option_id]) {
-      result[r.option_id] = {
-        count: 0,
-        task: {
-          imageUrl: r.option.image_url,
-        },
-      };
-    }
+    result[r.option_id].count++;
+  });
+
+  res.json({
+    msg: "Task details fetched successfully",
+    taskDetails,
+    responses: result,
   });
 };
