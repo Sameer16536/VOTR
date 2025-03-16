@@ -54,16 +54,40 @@ export const getWorkerTask = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-    //@ts-ignore
-    const workerId = req.workerId;
+  //@ts-ignore
+  const workerId = req.workerId;
 
-    const task = await prisma.task.findFirst({
-           where:{
-            submissions:{
-                none:{
-                    worker_id:workerId
-                }
-            }
-           } 
-    })
+  const task = await prisma.task.findFirst({
+    where: {
+      done: false,
+      submissions: {
+        none: {
+          worker_id: workerId,
+        },
+      },
+    },
+    select: {
+      title: true,
+      options: true,
+    },
+  });
+
+  if (!task) {
+    res
+      .json({
+        msg: "No task available for review",
+      })
+      .status(411);
+  } else {
+    res
+      .json({
+        task,
+      })
+      .status(411);
+  }
 };
+
+export const postSubmission = async (
+  req: Request,
+  res: Response
+): Promise<void> => {};

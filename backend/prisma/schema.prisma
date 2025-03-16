@@ -22,6 +22,7 @@ model Task {
   user        User         @relation(fields: [user_id], references: [id])
   signature   String
   amount      String
+  done        Boolean      @default(false) 
   submissions Submission[]
 }
 
