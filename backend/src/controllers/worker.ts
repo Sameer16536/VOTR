@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { getNextTask } from "../db";
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.WORKER_JWT_SECRET!;
 
@@ -57,20 +58,7 @@ export const getWorkerTask = async (
   //@ts-ignore
   const workerId = req.workerId;
 
-  const task = await prisma.task.findFirst({
-    where: {
-      done: false,
-      submissions: {
-        none: {
-          worker_id: workerId,
-        },
-      },
-    },
-    select: {
-      title: true,
-      options: true,
-    },
-  });
+  const task  = await getNextTask(workerId);
 
   if (!task) {
     res
@@ -90,4 +78,6 @@ export const getWorkerTask = async (
 export const postSubmission = async (
   req: Request,
   res: Response
-): Promise<void> => {};
+): Promise<void> => {
+
+};
