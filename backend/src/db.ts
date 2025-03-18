@@ -13,8 +13,10 @@ export const getNextTask =async (workerId: number) => {
           },
         },
         select: {
+          id: true,
           title: true,
           options: true,
+          amount: true,
         },
       });
       return task;

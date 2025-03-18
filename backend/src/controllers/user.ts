@@ -10,6 +10,7 @@ import { createTaskInput } from "../types";
 const prisma = new PrismaClient();
 
 const DEFAULT_TITLE = "Untitled Task";
+const TOTAL_DECIMALS = 1000_000_000;
 
 const config = {
   credentials: {
@@ -114,7 +115,7 @@ export const postUserTask = async (
     const task = await tx.task.create({
       data: {
         title: parsedData.data.title ?? DEFAULT_TITLE,
-        amount: "50",
+        amount: 1 * TOTAL_DECIMALS,
         signature: parsedData.data.signature,
         user_id: userId,
       },
