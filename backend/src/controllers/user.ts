@@ -10,7 +10,7 @@ import { createTaskInput } from "../types";
 const prisma = new PrismaClient();
 
 const DEFAULT_TITLE = "Untitled Task";
-const TOTAL_DECIMALS = 1000_000_000;
+const TOTAL_DECIMALS = 100000;
 
 const config = {
   credentials: {

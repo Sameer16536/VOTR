@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 const JWT_SECRET = process.env.WORKER_JWT_SECRET!;
 
 const TOTAL_SUBMISSIONS = 100;
-const TOTAL_DECIMALS = 1000_000_000;
+const TOTAL_DECIMALS = 100000;
 
 
 
@@ -134,3 +134,21 @@ export const postSubmission = async (
   }
   
 };
+
+
+export const getBalance = async(req:Request,res:Response):Promise<void> =>{
+  //@ts-ignore
+  const wokerId = req.workerId;
+
+  const worker = await prisma.worker.findFirst({
+    where:{
+      id:Number(wokerId)
+    }
+  })
+
+  res.json({
+    pendingAmount:worker?.pending_amount,
+    lockedAmount:worker?.locked_amount
+
+  })
+}
