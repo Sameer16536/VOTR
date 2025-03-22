@@ -99,7 +99,7 @@ export const postSubmission = async (
   const amount = (Number(task?.amount)/TOTAL_SUBMISSIONS)
   
  const subm = await  prisma.$transaction(async tx =>{
-    const submission = await prisma.submission.create({
+    const submission = await tx.submission.create({
       data:{
         option_id:Number(parsedBody.data.selection),
         worker_id:Number(workerId),
@@ -108,13 +108,13 @@ export const postSubmission = async (
   
       }
     })
-    await prisma.worker.update({
+    await tx.worker.update({
       where:{
         id:workerId
       },
       data:{
         pending_amount:{
-          increment:amount * TOTAL_DECIMALS
+          increment:amount 
         }
       }
     })
@@ -151,4 +151,41 @@ export const getBalance = async(req:Request,res:Response):Promise<void> =>{
     lockedAmount:worker?.locked_amount
 
   })
+}
+
+export const payout = async(req:Request,res:Response):Promise<void> =>{
+  //@ts-ignore
+  const wokerId = req.workerId
+  const worker =  await prisma.worker.findFirst({
+    where:{
+      id:wokerId
+    }
+  })
+  if (!worker){
+    res.status(403).json({
+      msg:"Worker not found"
+    })
+    return
+  }
+  const address = worker.address
+
+
+  //Create a transaction here to transfer some money from ur wallet to specific user wallet
+  const txnId  = '0x1231231231'
+
+  await prisma.$transaction(async tx =>{ 
+    await tx.worker.update({
+      where:{
+        id:wokerId
+      },
+      data:{
+        pending_amount:{
+          decrement:worker.pending_amount
+        },
+        locked_amount:{
+          increment:worker.locked_amount
+        }
+      }
+    })
+  }) 
 }

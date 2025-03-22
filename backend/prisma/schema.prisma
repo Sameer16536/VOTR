@@ -8,10 +8,11 @@ datasource db {
 }
 
 model User {
-  id      Int     @id @default(autoincrement())
+  id      Int       @id @default(autoincrement())
   name    String?
-  address String  @unique
+  address String    @unique
   tasks   Task[]
+  Payouts Payouts[]
 }
 
 model Task {
@@ -22,7 +23,7 @@ model Task {
   user        User         @relation(fields: [user_id], references: [id])
   signature   String
   amount      Int
-  done        Boolean      @default(false) 
+  done        Boolean      @default(false)
   submissions Submission[]
 }
 
@@ -52,9 +53,24 @@ model Submission {
   task_id   Int
   task      Task   @relation(fields: [task_id], references: [id])
   amount    Int
+
   @@unique([worker_id, task_id])
 }
 
+model Payouts {
+  id        Int       @id @default(autoincrement())
+  user_id   Int
+  user      User      @relation(fields: [user_id], references: [id])
+  amount    Int
+  signature String
+  status    TxnStatus
+}
+
+enum TxnStatus{
+  Processing
+  Success
+  Failure
+}
 //Think for More optimal solution
 // model SubmissionCache{
 //   id     Int     @id @default(autoincrement())
