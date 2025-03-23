@@ -187,5 +187,16 @@ export const payout = async(req:Request,res:Response):Promise<void> =>{
         }
       }
     })
+    await tx.payouts.create({
+      data:{
+        user_id:wokerId,
+        amount:worker.pending_amount,
+        status:"Processing",
+        signature:txnId
+      }
+    })
   }) 
+  res.json({
+    msg:"Payout initiated"
+  })
 }
