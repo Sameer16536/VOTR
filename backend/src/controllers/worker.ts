@@ -77,8 +77,8 @@ export const getWorkerTask = async (
     res
       .json({
         task,
-      })
-      .status(411);
+      }).status(200)
+      ;
   }
 };
 
@@ -130,7 +130,9 @@ export const postSubmission = async (
   })
 } 
   else{
-
+    res.status(411).json({
+      msg:"Incorrect input"
+    })
   }
   
 };
